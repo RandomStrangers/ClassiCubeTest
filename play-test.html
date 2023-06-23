@@ -1,0 +1,186 @@
+
+
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Play - ClassiCube.net - Not Awesome 2</title>
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#9873ac">
+<meta name="canoni  cal-url" content="https://www.classicube.net/server/play/7fd28c1929b62423421baa9cf9c555d5/?canproxy=true">
+<meta name="description" content="Free multiplayer sandbox block game">
+<meta name="keywords" content="Free,Multiplayer,ClassiCube,Classic Cube,video games,play.jsp">
+<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700' rel='stylesheet' type='text/css'>
+<link href="https://randomstrangers.w3spaces.com/style.css" rel="stylesheet" type="text/css">
+<link href="https://randomstrangers.w3spaces.com/foundation-icons.css" rel="stylesheet" type="text/css">
+<style>
+            @import url("https://randomstrangers.w3spaces.com/dark.css") (prefers-color-scheme: dark);
+        </style>
+<script type="text/javascript" src="https://www.dropbox.com/s/ouc63wz58b3fuor/jquery.js"></script>
+<script type="text/javascript" src="https://www.dropbox.com/s/rb4svw01j3otyti/foundation.min.js"></script>
+<script type="text/javascript" src="https://www.dropbox.com/s/sd8cxgexj3drxu1/ih.playerCards.js"></script>
+<script async crossorigin defer data-website-id="7461a7f5-8f46-4842-baaa-d1ee84ff8a51" src="https://www.dropbox.com/s/mbt5urduas4cftg/eat-your-yeeties.js"></script>
+</head>
+<body>
+<div id="header">
+<div class="row">
+<a href="/"><h1 class="small-12 medium-1 columns">ClassiCube</h1></a>
+<span id="mnav_cont" class="show-for-small-only">
+<label for="navtoggle">
+<div id="navtoggle_btn"><i class="fi-list"> </i></div>
+</label>
+<input type="checkbox" style="display:none;" id="navtoggle">
+<div id="mnav">
+<a href="https://f.classicube.net/">Forum</a><a href="https://c-test.w3spaces.com/server-list.html">Play</a><a href="https://www.classicube.net/acc/logout/">Log out</a><a href="https://www.classicube.net/acc" class="button">RandomStranger05</a>
+</div>
+</span>
+<div id="nav" class="show-for-medium-up">
+<a href="https://f.classicube.net/">Forum</a><a href="https://c-test.w3spaces.com/server-list.html">Play</a><a href="https://www.classicube.net/acc/logout/">Log out</a><a href="https://www.classicube.net/acc" class="button">RandomStranger05</a>
+</div>
+</div>
+</div>
+<div id="body">
+<style>
+#logmsg { font-size:18px; font-family:'Source Sans Pro', sans-serif; text-shadow:1px 1px 5px rgba(0,0,0,.5); font-weight:bold; text-align:center; white-space: pre-wrap; }
+/* the canvas *must not* have any border or padding, or mouse coords will be wrong */
+#canvas { display:block; box-sizing:border-box; border-width:0px !important; padding:0 !important; margin:0 auto; box-shadow: 0 3px 5px rgba(0,0,0,.4); width:100%; height:auto; }
+</style>
+<div class="sec">
+<div class="row">
+<canvas class="emscripten" id="canvas" style="background-color: black;" oncontextmenu="event.preventDefault()" tabindex=-1 width="1000" height="562"></canvas>
+<span id="logmsg" style="color:#F67;"></span>
+</div>
+</div>
+<script type='text/javascript'>
+      function logText(text) { 
+        console.log(text);
+        var logElement = document.getElementById('logmsg');
+        logElement.innerHTML = text;
+      }
+
+      // ensure game still runs even without IndexedDB
+      var idb = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
+      if (!idb) { alert('IndexedDB unsupported, therefore\nmaps and settings will not save');window.mozIndexedDB = {}; }
+
+      // need to load IndexedDB before running the game
+      function preloadIndexedDB() { _interop_LoadIndexedDB(); }
+      
+      function forceTouchLayout() {
+        var elem;
+        try {
+          elem = document.getElementById('footer');
+          elem.parentNode.removeChild(elem);
+          elem = document.getElementById('content');
+          elem.parentNode.removeChild(elem);
+        } catch (err) { }
+      }
+      
+      function getCssInt(styles, prop) { return parseInt(styles.getPropertyValue(prop), 10); }
+      function calcViewportWidth(elem) {
+        var parent = elem.parentNode;
+        var styles = window.getComputedStyle(parent, null);
+        return parent.offsetWidth - getCssInt(styles, 'padding-left') - getCssInt(styles, 'padding-right');
+      }
+
+      function resizeGameCanvas() {
+        var cc_canv = document.getElementById('canvas');
+        var dpi = window.devicePixelRatio;
+        var aspect_ratio = 16/9;
+
+        var viewport_w = calcViewportWidth(cc_canv);
+        var viewport_h = viewport_w / aspect_ratio;
+
+        var canv_w = Math.round(viewport_w);
+        var canv_h = Math.round(viewport_h);
+
+        if (canv_h % 2) { canv_h = canv_h - 1; }
+        if (canv_w % 2) { canv_w = canv_w - 1; }
+
+
+        cc_canv.width  = canv_w * dpi;
+        cc_canv.height = canv_h * dpi;
+      }
+      
+      function logFatal(event) {
+        Module.setStatus('ClassiCube has crashed (' + event + ')\nPlease report this on the ClassiCube forums or to UnknownShadow200\n\nTo see more details, open Developer Tools and go to Console tab');
+        Module.setStatus = function(text) {
+          if (event) Module.printErr('[post-exception status] ' + event);
+        };
+      }
+      
+      var Module = {
+        preRun: [ preloadIndexedDB, resizeGameCanvas ],
+        postRun: [],
+        arguments: ['RandomStranger05', 'ba1f9fb73ed544add454fe106633c012', 'ws.classicube.net/192.95.30.161:25556', '443'],
+        print: function(text) {
+            if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+            console.log(text);
+        },
+        printErr: function(text) {
+          if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+          console.error(text);
+        },
+        canvas: (function() {
+          return document.getElementById('canvas');
+        })(),
+        setStatus: logText,
+        totalDependencies: 0,
+        monitorRunDependencies: function(left) {
+          this.totalDependencies = Math.max(this.totalDependencies, left);
+          Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies-left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
+        },
+        onAbort: function(why) { logFatal('abort: ' + why); }
+      };
+
+      Module.setStatus('Downloading...');
+      window.onerror = function(event) { logFatal(event); };
+
+      function onDownloadFailed(src) {
+        // retry without CORS
+        logText('Failed to download ClassiCube.js, retrying..');
+        var root = src.parentNode;
+        root.removeChild(src);
+
+        var elem = document.createElement('script');
+        elem.setAttribute('async', '');
+        elem.setAttribute('src', '//cdn.classicube.net/client/latest/ClassiCube.js?v=14');
+        root.appendChild(elem);
+    }
+    </script>
+<script async crossorigin type="text/javascript" src="https://www.dropbox.com/s/84lf9xuo96ebvgm/ClassiCube.js" onerror="onDownloadFailed(this)"></script>
+<div id="content">
+<div class="container" style="text-align:center;">
+<h3>Default Controls</h3>
+<img src="https://www.classicube.net/static/img/controls.png" style="margin:auto;">
+</div>
+</div>
+</div>
+<div id="footer" class="row">
+<div class="small-6 medium-4 columns flinks">
+<a href="https://github.com/UnknownShadow200/ClassiCube"><i class="fi-social-github"></i> Client Source Code</a>
+<a href="https://github.com/UnknownShadow200/ClassiCube/issues" class="h-alert"><i class="fi-alert"></i> Client Issues</a>
+<a href="https://www.classicube.net/discord/" class="h-discord"><i class="fi-comments"></i> Discord</a>
+</div>
+<div class="small-6 medium-4 columns flinks">
+<a href="https://patreon.com/ClassiCube" class="h-alert"><i class="fi-heart"></i> Support Us</a>
+<a href="https://www.classicube.net/privacy/" class="h-general"><i class="fi-eye"></i> Privacy Policy</a>
+<a href="https://webchat.esper.net/?channels=classicube" class="h-general"><i class="fi-web"></i> IRC</a>
+</div>
+<div class="small-12 medium-4 columns">
+<p id="copyright">ClassiCube is in no way affiliated with Mojang AB, Microsoft, or any of their partners or products. <a href="https://www.classicube.net/terms/"> Terms of use</a></p>
+<a href="https://www.classicube.net/discord/" class="button expand discord" title="Join our Discord"><img src="https://www.classicube.net/static/v2/img/discord.svg"></a>
+</div>
+</div>
+<script>
+            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+            })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+            ga('create', 'UA-43289810-1', 'classicube.net');
+            ga('send', 'pageview');
+            $( document ).ready(function() {
+              $( document ).foundation();
+            });
+        </script>
+</body>
+</html>
